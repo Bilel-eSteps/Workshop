@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LoadingController, NavController } from '@ionic/angular';
 import { TestPokeapiService } from '../services/test-pokeapi.service';
 import { Pokemon } from '../model/pokemon';
+import { PluginListenerHandle } from '@capacitor/core';
+import { Motion } from '@capacitor/motion';
 
 @Component({
   selector: 'app-tab1',
@@ -14,9 +16,16 @@ export class Tab1Page implements OnInit, OnDestroy {
     private nav: NavController,
     private pokeService: TestPokeapiService
   ) {}
+
   interWatchDog: any;
   listOfPokemons:Pokemon[]=[];
   async ngOnInit() {
+    let accelHandler: PluginListenerHandle = await Motion.addListener('accel', event => {
+      console.log('Device motion event:', event);
+    });
+    setTimeout(() => {
+      accelHandler.remove();
+    }, 8000);
     this.pokeService.getPokemons(20).subscribe((value)=>{
     console.log(value);
     this.listOfPokemons=value.results
